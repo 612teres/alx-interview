@@ -1,32 +1,31 @@
 #!/usr/bin/python3
-'''LockBoxes Challenge'''
-
+"""
+This module contains the canUnlockAll function
+which determines if all boxes can be unlocked.
+"""
 
 def canUnlockAll(boxes):
-    '''determines wether all the boxes can be opened or not
+    """
+    Determines if all boxes can be opened.
+
+    Args:
+        boxes (list of list of int): List where each element is a list of keys
+                                    inside that box.
+
     Returns:
-        True: all boxes can be opened
-        False: not all boxes can be opened
-    '''
-    length = len(boxes)
-    keys = set()
-    opened_boxes = []
-    i = 0
+        bool: True if all boxes can be opened, otherwise False.
+    """
+    unlocked = [False] * len(boxes)
+    unlocked[0] = True  # The first box is always unlocked
+    keys = boxes[0]  # Start with the keys from the first box
 
-    while i < length:
-        oldi = i
-        opened_boxes.append(i)
-        keys.update(boxes[i])
-        for key in keys:
-            if key != 0 and key < length and key not in opened_boxes:
-                i = key
-                break
-        if oldi != i:
-            continue
-        else:
-            break
+    for key in keys:
+        if key < len(boxes) and not unlocked[key]:
+            unlocked[key] = True
+            keys.extend(boxes[key])  # Add keys from the newly unlocked box
 
-    for i in range(length):
-        if i not in opened_boxes and i != 0:
+    # Iterate to ensure all reachable boxes are unlocked
+    for i in range(1, len(boxes)):
+        if not unlocked[i]:
             return False
     return True
