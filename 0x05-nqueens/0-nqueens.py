@@ -1,54 +1,58 @@
 #!/usr/bin/python3
 """
-N queens
+N Queens Problem: Solves the N Queens problem using backtracking.
 """
 
 import sys
 
-if len(sys.argv) != 2:
-    print('Usage: nqueens N')
+
+def print_usage():
+    print("Usage: nqueens N")
     exit(1)
+
+
+# Argument validation
+if len(sys.argv) != 2:
+    print_usage()
 
 try:
-    n_q = int(sys.argv[1])
+    n = int(sys.argv[1])
 except ValueError:
-    print('N must ba a number')
+    print("N must be a number")
     exit(1)
 
-if n_q < 4:
-    print('N must ba at least 4')
+if n < 4:
+    print("N must be at least 4")
     exit(1)
 
 
 def solve_nqueens(n):
-    ''' self descriptive '''
-    if n == 0:
-        return [[]]
-    inner_solution = solve_nqueens(n - 1)
-    return [solution + [(n, i + 1)]
-            for i in range(n_q)
-            for solution in inner_solution
-            if safe_queen((n, i + 1), solution)]
+    """Solve the N-Queens problem using backtracking."""
+    solutions = []
+    board = [-1] * n  # Each index represents a row, value represents column
+
+    def is_safe(row, col):
+        """Check if placing a queen at (row, col) is safe."""
+        for r in range(row):
+            c = board[r]
+            if c == col or abs(c - col) == abs(r - row):
+                return False
+        return True
+
+    def place_queen(row):
+        """Recursive function to place queens and find solutions."""
+        if row == n:
+            solutions.append([[i, board[i]] for i in range(n)])
+            return
+        for col in range(n):
+            if is_safe(row, col):
+                board[row] = col
+                place_queen(row + 1)
+                board[row] = -1
+
+    place_queen(0)
+    return solutions
 
 
-def attack_queen(square, queen):
-    '''self descriptive'''
-    (row1, col1) = square
-    (row2, col2) = queen
-    return (row1 == row2) or (col1 == col2) or\
-        abs(row1 - row2) == abs(col1 - col2)
-
-
-def safe_queen(sqr, queens):
-    '''self descriptive'''
-    for queen in queens:
-        if attack_queen(sqr, queen):
-            return False
-    return True
-
-
-for answer in reversed(solve_nqueens(n_q)):
-    result = []
-    for p in [list(p) for p in answer]:
-        result.append([i - 1 for i in p])
-    print(result)
+for solution in solve_nqueens(n):
+    print(solution)
